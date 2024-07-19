@@ -6,7 +6,7 @@
   <title>Edit Stats</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
-    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+    table { width: 90%; margin: 20px auto; border-collapse: collapse; }
     th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
     th { background-color: #f4f4f4; }
     input { width: 50px; }
@@ -19,159 +19,60 @@
   <div id="match-stats">
     <h2>Match Stats</h2>
     <button onclick="addMatch()">Add New Match</button>
+
     <div id="rating-stats">
       <h3>Ratings</h3>
       <table id="rating-table">
         <thead>
           <tr>
             <th>Player</th>
+            <th>Match 1</th>
+            <th>Match 2</th>
+            <th>Match 3</th>
+            <!-- Add more match headers as needed -->
           </tr>
         </thead>
         <tbody>
           ${players.map(player => `
             <tr id="rating-${player}">
               <td>${player}</td>
+              <td><input type="number" step="0.5" value="0" oninput="updateMatchStat(0, '${player}', 'rating', this.value)"></td>
+              <td><input type="number" step="0.5" value="0" oninput="updateMatchStat(1, '${player}', 'rating', this.value)"></td>
+              <td><input type="number" step="0.5" value="0" oninput="updateMatchStat(2, '${player}', 'rating', this.value)"></td>
+              <!-- Add more match inputs as needed -->
             </tr>
           `).join('')}
         </tbody>
       </table>
     </div>
+
     <div id="goals-stats">
       <h3>Goals</h3>
       <table id="goals-table">
         <thead>
           <tr>
             <th>Player</th>
+            <th>Match 1</th>
+            <th>Match 2</th>
+            <th>Match 3</th>
+            <!-- Add more match headers as needed -->
           </tr>
         </thead>
         <tbody>
           ${players.map(player => `
             <tr id="goals-${player}">
               <td>${player}</td>
+              <td><input type="number" value="0" oninput="updateMatchStat(0, '${player}', 'goals', this.value)"></td>
+              <td><input type="number" value="0" oninput="updateMatchStat(1, '${player}', 'goals', this.value)"></td>
+              <td><input type="number" value="0" oninput="updateMatchStat(2, '${player}', 'goals', this.value)"></td>
+              <!-- Add more match inputs as needed -->
             </tr>
           `).join('')}
         </tbody>
       </table>
     </div>
-    <div id="assists-stats">
-      <h3>Assists</h3>
-      <table id="assists-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="assists-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div id="yellow-cards-stats">
-      <h3>Yellow Cards</h3>
-      <table id="yellow-cards-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="yellow-cards-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div id="red-cards-stats">
-      <h3>Red Cards</h3>
-      <table id="red-cards-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="red-cards-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div id="head-loss-stats">
-      <h3>Head Loss</h3>
-      <table id="head-loss-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="head-loss-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div id="motm-stats">
-      <h3>MOTM</h3>
-      <table id="motm-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="motm-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div id="dotd-stats">
-      <h3>DOTD</h3>
-      <table id="dotd-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="dotd-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div id="lates-stats">
-      <h3>Lates</h3>
-      <table id="lates-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="lates-${player}">
-              <td>${player}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
+
+    <!-- Add similar tables for Assists, Yellow Cards, Red Cards, Head Loss, MOTM, DOTD, Lates -->
   </div>
 
   <div id="total-stats">
@@ -194,37 +95,11 @@
 
   <script>
     const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
-    let matchCount = 0;
 
     function loadStats() {
       const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
-      matchCount = matchStats.length;
       const totalStats = calculateTotals(matchStats);
 
       // Populate total stats table
       const totalTableBody = document.getElementById('total-table-body');
-      totalTableBody.innerHTML = '';
-      players.forEach(player => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${player}</td>
-          <td>${totalStats[player]?.appearances || 0}</td>
-          <td>${totalStats[player]?.goals || 0}</td>
-          <td>${totalStats[player]?.assists || 0}</td>
-        `;
-        totalTableBody.appendChild(row);
-      });
-
-      // Populate match forms
-      matchStats.forEach((match, index) => {
-        addMatchColumn(index + 1);
-        players.forEach(player => {
-          if (match[player]) {
-            document.getElementById(`rating-${player}`).innerHTML += `<td><input type="number" step="0.5" value="${match[player].rating || 0}" oninput="updateMatchStat(${index}, '${player}', 'rating', this.value)"></td>`;
-            document.getElementById(`goals-${player}`).innerHTML += `<td><input type="number" value="${match[player].goals || 0}" oninput="updateMatchStat(${index}, '${player}', 'goals', this.value)"></td>`;
-            document.getElementById(`assists-${player}`).innerHTML += `<td><input type="number" value="${match[player].assists || 0}" oninput="updateMatchStat(${index}, '${player}', 'assists', this.value)"></td>`;
-            document.getElementById(`yellow-cards-${player}`).innerHTML += `<td><input type="number" value="${match[player].yellowCards || 0}" oninput="updateMatchStat(${index}, '${player}', 'yellowCards', this.value)"></td>`;
-            document.getElementById(`red-cards-${player}`).innerHTML += `<td><input type="number" value="${match[player].redCards || 0}" oninput="updateMatchStat(${index}, '${player}', 'redCards', this.value)"></td>`;
-            document.getElementById(`head-loss-${player}`).innerHTML += `<td><input type="number" value="${match[player].headLoss || 0}" oninput="updateMatchStat(${index}, '${player}', 'headLoss', this.value)"></td>`;
-            document.getElementById(`motm-${player}`).innerHTML += `<td><input type="number" value="${match[player].MOTM || 0}" oninput="updateMatchStat(${index}, '${player}', 'MOTM', this.value)"></td>`;
-            document.getElementById(`dotd-${player}`).innerHTML += `<td><input type="number" value="${match[player].DOTD || 0}" oninput="updateMatchStat(${index}, '${player}', 'DOTD', this
+      totalTableBody
