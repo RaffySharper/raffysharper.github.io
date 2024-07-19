@@ -16,24 +16,7 @@
 
   <div id="match-stats">
     <h2>Match Stats</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Player</th>
-          <th>Rating</th>
-          <th>Goals</th>
-          <th>Assists</th>
-          <th>Yellow Cards</th>
-          <th>Red Cards</th>
-          <th>Head Loss</th>
-          <th>MOTM</th>
-          <th>DOTD</th>
-          <th>Lates</th>
-        </tr>
-      </thead>
-      <tbody id="match-table-body">
-      </tbody>
-    </table>
+    <div id="tables-container"></div>
   </div>
 
   <div id="total-stats">
@@ -56,32 +39,11 @@
 
   <script>
     const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
+    const stats = ["rating", "goals", "assists", "yellowCards", "redCards", "headLoss", "MOTM", "DOTD", "lates"];
 
     function loadStats() {
       const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
       const totalStats = calculateTotals(matchStats);
-
-      // Populate match stats table
-      const matchTableBody = document.getElementById('match-table-body');
-      matchTableBody.innerHTML = '';
-      matchStats.forEach((match, index) => {
-        players.forEach(player => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${player}</td>
-            <td>${match[player]?.rating || 0}</td>
-            <td>${match[player]?.goals || 0}</td>
-            <td>${match[player]?.assists || 0}</td>
-            <td>${match[player]?.yellowCards || 0}</td>
-            <td>${match[player]?.redCards || 0}</td>
-            <td>${match[player]?.headLoss || 0}</td>
-            <td>${match[player]?.MOTM || 0}</td>
-            <td>${match[player]?.DOTD || 0}</td>
-            <td>${match[player]?.lates || 0}</td>
-          `;
-          matchTableBody.appendChild(row);
-        });
-      });
 
       // Populate total stats table
       const totalTableBody = document.getElementById('total-table-body');
@@ -95,6 +57,32 @@
           <td>${totalStats[player]?.assists || 0}</td>
         `;
         totalTableBody.appendChild(row);
+      });
+
+      // Populate match forms
+      const tablesContainer = document.getElementById('tables-container');
+      tablesContainer.innerHTML = '';
+      stats.forEach(stat => {
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Player</th>
+              ${[...Array(matchStats.length)].map((_, i) => `<th>Match ${i + 1}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${players.map(player => `
+              <tr id="${stat}-${player}">
+                <td>${player}</td>
+                ${matchStats.map((match, i) => `
+                  <td>${match[player]?.[stat] || 0}</td>
+                `).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        `;
+        tablesContainer.appendChild(table);
       });
     }
 
@@ -112,10 +100,4 @@
           }
         });
       });
-      return totals;
-    }
-
-    window.onload = loadStats;
-  </script>
-</body>
-</html>
+     
