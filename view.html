@@ -30,6 +30,8 @@
           <th>Appearances</th>
           <th>Total Goals</th>
           <th>Total Assists</th>
+          <th>Total Goals + Assists</th>
+          <th>Average Goals</th>
         </tr>
       </thead>
       <tbody id="total-table-body">
@@ -62,20 +64,6 @@
       const totalTableBody = document.getElementById('total-table-body');
       totalTableBody.innerHTML = '';
       players.forEach(player => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${player}</td>
-          <td>${totalStats[player]?.appearances || 0}</td>
-          <td>${totalStats[player]?.goals || 0}</td>
-          <td>${totalStats[player]?.assists || 0}</td>
-        `;
-        totalTableBody.appendChild(row);
-      });
-
-      // Populate match forms
-      const tablesContainer = document.getElementById('tables-container');
-      tablesContainer.innerHTML = '';
-      stats.forEach(stat => {
-        const tableContainer = document.createElement('div');
-        tableContainer.classList.add('table-container');
-        tableContainer.innerHTML = `<h
+        const goals = totalStats[player]?.goals || 0;
+        const assists = totalStats[player]?.assists || 0;
+        const appearances = totalStats
