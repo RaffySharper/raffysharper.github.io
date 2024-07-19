@@ -11,6 +11,7 @@
     th { background-color: #f4f4f4; }
     input { width: 50px; }
     button { margin: 20px; }
+    .table-container { margin-bottom: 30px; }
   </style>
 </head>
 <body>
@@ -45,6 +46,17 @@
     const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
     let matchCount = 0;
     const stats = ["rating", "goals", "assists", "yellowCards", "redCards", "headLoss", "MOTM", "DOTD", "lates"];
+    const statNames = {
+      rating: "Ratings",
+      goals: "Goals",
+      assists: "Assists",
+      yellowCards: "Yellow Cards",
+      redCards: "Red Cards",
+      headLoss: "Head Loss",
+      MOTM: "MOTM",
+      DOTD: "DOTD",
+      lates: "Lates"
+    };
 
     function loadStats() {
       const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
@@ -69,6 +81,9 @@
       const tablesContainer = document.getElementById('tables-container');
       tablesContainer.innerHTML = '';
       stats.forEach(stat => {
+        const tableContainer = document.createElement('div');
+        tableContainer.classList.add('table-container');
+        tableContainer.innerHTML = `<h3>${statNames[stat]}</h3>`;
         const table = document.createElement('table');
         table.innerHTML = `
           <thead>
@@ -88,7 +103,8 @@
             `).join('')}
           </tbody>
         `;
-        tablesContainer.appendChild(table);
+        tableContainer.appendChild(table);
+        tablesContainer.appendChild(tableContainer);
       });
     }
 
