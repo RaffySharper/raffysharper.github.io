@@ -5,26 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View Stats</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background-color: #f4f4f4; }
   </style>
 </head>
 <body>
   <h1>Football Stats</h1>
-  <p>Matches Played: <span id="matches_played">0</span></p>
-  <p>Goals Scored: <span id="goals_scored">0</span></p>
-  <p>Goals Conceded: <span id="goals_conceded">0</span></p>
+
+  <div id="match-stats">
+    <h2>Match Stats</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Rating</th>
+          <th>Goals</th>
+          <th>Assists</th>
+          <th>Yellow Cards</th>
+          <th>Red Cards</th>
+          <th>Head Loss</th>
+          <th>MOTM</th>
+          <th>DOTD</th>
+          <th>Lates</th>
+        </tr>
+      </thead>
+      <tbody id="match-table-body">
+      </tbody>
+    </table>
+  </div>
+
+  <div id="total-stats">
+    <h2>Total Stats</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Appearances</th>
+          <th>Total Goals</th>
+          <th>Total Assists</th>
+        </tr>
+      </thead>
+      <tbody id="total-table-body">
+      </tbody>
+    </table>
+  </div>
+
   <a href="index.html">Back to Sign In</a>
 
   <script>
+    const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
+
     function loadStats() {
-      const stats = {
-        matches_played: localStorage.getItem('matches_played') || 0,
-        goals_scored: localStorage.getItem('goals_scored') || 0,
-        goals_conceded: localStorage.getItem('goals_conceded') || 0
-      };
-      document.getElementById('matches_played').textContent = stats.matches_played;
-      document.getElementById('goals_scored').textContent = stats.goals_scored;
-      document.getElementById('goals_conceded').textContent = stats.goals_conceded;
+      const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
+      const totalStats = calculateTotals(matchStats);
+
+      // Populate match stats table
+      const matchTableBody = document.getElementById('match-table-body');
+      matchTableBody.innerHTML = '';
+      matchStats.forEach((match, index) => {
+        players.forEach(player => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${player}</td>
+            <td>${match[player]?.rating || 0}</td>
+            <td>${match[player]?.goals || 0}</td>
+            <td>${match[player]?.assists || 0}</td>
+            <td>${match[player]?.yellowCards || 0}</td>
+            <td>${match[player]?.redCards || 0}</td>
+            <td>${match[player]?.headLoss || 0}</td>
+            <td>${match[player]?.MOTM || 0}</td>
+            <td>${match[player]?.DOTD || 0}</td>
+            <td>${match[player]?.lates || 0}</td>
+          `;
+          matchTableBody.appendChild(row);
+        });
+      });
+
+      // Populate total stats table
+      const totalTableBody = document.getElementById('total-table-body');
+      totalTableBody.innerHTML = '';
+      players.forEach(player => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${player}</td>
+          <td>${totalStats[player]?.appearances || 0}</td>
+          <td>${totalStats[player]?.goals || 0}</td>
+          <td>${totalStats[player]?.assists || 0}</td>
+        `;
+        totalTableBody.appendChild(row);
+      });
+    }
+
+    function calculateTotals(matchStats) {
+      const totals = {};
+      players.forEach(player => {
+        totals[player] = { appearances: 0, goals: 0, assists: 0 };
+      });
+      matchStats.forEach(match => {
+        players.forEach(player => {
+          if (match[player]) {
+            totals[player].appearances += 1;
+            totals[player].goals += match[player].goals || 0;
+            totals[player].assists += match[player].assists || 0;
+          }
+        });
+      });
+      return totals;
     }
 
     window.onload = loadStats;
