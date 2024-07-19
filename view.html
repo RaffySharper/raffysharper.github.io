@@ -16,11 +16,6 @@
 <body>
   <h1>Football Stats</h1>
 
-  <div id="match-stats">
-    <h2>Match Stats</h2>
-    <div id="tables-container"></div>
-  </div>
-
   <div id="total-stats">
     <h2>Total Stats</h2>
     <table>
@@ -37,6 +32,11 @@
       <tbody id="total-table-body">
       </tbody>
     </table>
+  </div>
+
+  <div id="match-stats">
+    <h2>Match Stats</h2>
+    <div id="tables-container"></div>
   </div>
 
   <a href="index.html">Back to Sign In</a>
@@ -66,4 +66,70 @@
       players.forEach(player => {
         const goals = totalStats[player]?.goals || 0;
         const assists = totalStats[player]?.assists || 0;
-        const appearances = totalStats
+        const appearances = totalStats[player]?.appearances || 0;
+        const totalGA = goals + assists;
+        const avgGoals = (appearances > 0) ? (goals / appearances).toFixed(2) : 0;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${player}</td>
+          <td>${appearances}</td>
+          <td>${goals}</td>
+          <td>${assists}</td>
+          <td>${totalGA}</td>
+          <td>${avgGoals}</td>
+        `;
+        totalTableBody.appendChild(row);
+      });
+
+      // Populate match forms
+      const tablesContainer = document.getElementById('tables-container');
+      tablesContainer.innerHTML = '';
+      stats.forEach(stat => {
+        const tableContainer = document.createElement('div');
+        tableContainer.classList.add('table-container');
+        tableContainer.innerHTML = `<h3>${statNames[stat]}</h3>`;
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Player</th>
+              ${[...Array(matchStats.length)].map((_, i) => `<th>Match ${i + 1}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${players.map(player => `
+              <tr id="${stat}-${player}">
+                <td>${player}</td>
+                ${[...Array(matchStats.length)].map((_, i) => `
+                  <td>${matchStats[i][player]?.[stat] || 0}</td>
+                `).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        `;
+        tableContainer.appendChild(table);
+        tablesContainer.appendChild(tableContainer);
+      });
+    }
+
+    function calculateTotals(matchStats) {
+      const totals = {};
+      players.forEach(player => {
+        totals[player] = { appearances: 0, goals: 0, assists: 0 };
+      });
+      matchStats.forEach(match => {
+        players.forEach(player => {
+          if (match[player]) {
+            totals[player].appearances += 1;
+            totals[player].goals += match[player].goals || 0;
+            totals[player].assists += match[player].assists || 0;
+          }
+        });
+      });
+      return totals;
+    }
+
+    window.onload = loadStats;
+  </script>
+</body>
+</html>
