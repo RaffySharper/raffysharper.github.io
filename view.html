@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Stats</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+  </style>
+</head>
+<body>
+  <h1>Football Stats</h1>
+  <p>Matches Played: <span id="matches_played">0</span></p>
+  <p>Goals Scored: <span id="goals_scored">0</span></p>
+  <p>Goals Conceded: <span id="goals_conceded">0</span></p>
+  <a href="index.html">Back to Sign In</a>
+
+  <script>
+    function loadStats() {
+      const stats = {
+        matches_played: localStorage.getItem('matches_played') || 0,
+        goals_scored: localStorage.getItem('goals_scored') || 0,
+        goals_conceded: localStorage.getItem('goals_conceded') || 0
+      };
+      document.getElementById('matches_played').textContent = stats.matches_played;
+      document.getElementById('goals_scored').textContent = stats.goals_scored;
+      document.getElementById('goals_conceded').textContent = stats.goals_conceded;
+    }
+
+    window.onload = loadStats;
+  </script>
+</body>
+</html>
