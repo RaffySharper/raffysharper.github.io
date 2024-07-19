@@ -6,7 +6,7 @@
   <title>Edit Stats</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
-    table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
     th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
     th { background-color: #f4f4f4; }
     input { width: 50px; }
@@ -19,60 +19,8 @@
   <div id="match-stats">
     <h2>Match Stats</h2>
     <button onclick="addMatch()">Add New Match</button>
-
-    <div id="rating-stats">
-      <h3>Ratings</h3>
-      <table id="rating-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Match 1</th>
-            <th>Match 2</th>
-            <th>Match 3</th>
-            <!-- Add more match headers as needed -->
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="rating-${player}">
-              <td>${player}</td>
-              <td><input type="number" step="0.5" value="0" oninput="updateMatchStat(0, '${player}', 'rating', this.value)"></td>
-              <td><input type="number" step="0.5" value="0" oninput="updateMatchStat(1, '${player}', 'rating', this.value)"></td>
-              <td><input type="number" step="0.5" value="0" oninput="updateMatchStat(2, '${player}', 'rating', this.value)"></td>
-              <!-- Add more match inputs as needed -->
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-
-    <div id="goals-stats">
-      <h3>Goals</h3>
-      <table id="goals-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Match 1</th>
-            <th>Match 2</th>
-            <th>Match 3</th>
-            <!-- Add more match headers as needed -->
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(player => `
-            <tr id="goals-${player}">
-              <td>${player}</td>
-              <td><input type="number" value="0" oninput="updateMatchStat(0, '${player}', 'goals', this.value)"></td>
-              <td><input type="number" value="0" oninput="updateMatchStat(1, '${player}', 'goals', this.value)"></td>
-              <td><input type="number" value="0" oninput="updateMatchStat(2, '${player}', 'goals', this.value)"></td>
-              <!-- Add more match inputs as needed -->
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Add similar tables for Assists, Yellow Cards, Red Cards, Head Loss, MOTM, DOTD, Lates -->
+    
+    <div id="tables-container"></div>
   </div>
 
   <div id="total-stats">
@@ -95,11 +43,91 @@
 
   <script>
     const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
+    let matchCount = 0;
+    const stats = ["rating", "goals", "assists", "yellowCards", "redCards", "headLoss", "MOTM", "DOTD", "lates"];
 
     function loadStats() {
       const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
+      matchCount = matchStats.length;
       const totalStats = calculateTotals(matchStats);
 
       // Populate total stats table
       const totalTableBody = document.getElementById('total-table-body');
-      totalTableBody
+      totalTableBody.innerHTML = '';
+      players.forEach(player => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${player}</td>
+          <td>${totalStats[player]?.appearances || 0}</td>
+          <td>${totalStats[player]?.goals || 0}</td>
+          <td>${totalStats[player]?.assists || 0}</td>
+        `;
+        totalTableBody.appendChild(row);
+      });
+
+      // Populate match forms
+      const tablesContainer = document.getElementById('tables-container');
+      tablesContainer.innerHTML = '';
+      stats.forEach(stat => {
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Player</th>
+              ${[...Array(matchCount)].map((_, i) => `<th>Match ${i + 1}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${players.map(player => `
+              <tr id="${stat}-${player}">
+                <td>${player}</td>
+                ${[...Array(matchCount)].map((_, i) => `
+                  <td><input type="number" step="${stat === 'rating' ? 0.5 : 1}" value="${matchStats[i][player]?.[stat] || 0}" oninput="updateMatchStat(${i}, '${player}', '${stat}', this.value)"></td>
+                `).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        `;
+        tablesContainer.appendChild(table);
+      });
+    }
+
+    function addMatch() {
+      matchCount++;
+      const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
+      matchStats.push({});
+      localStorage.setItem('matchStats', JSON.stringify(matchStats));
+      loadStats();
+    }
+
+    function updateMatchStat(matchIndex, player, stat, value) {
+      const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
+      if (!matchStats[matchIndex][player]) {
+        matchStats[matchIndex][player] = {};
+      }
+      matchStats[matchIndex][player][stat] = parseFloat(value);
+      localStorage.setItem('matchStats', JSON.stringify(matchStats));
+      loadStats();
+    }
+
+    function calculateTotals(matchStats) {
+      const totals = {};
+      players.forEach(player => {
+        totals[player] = { appearances: 0, goals: 0, assists: 0 };
+      });
+      matchStats.forEach(match => {
+        players.forEach(player => {
+          if (match[player]) {
+            totals[player].appearances += 1;
+            totals[player].goals += match[player].goals || 0;
+            totals[player].assists += match[player].assists || 0;
+          }
+        });
+      });
+      return totals;
+    }
+
+    window.onload = loadStats;
+  </script>
+</body>
+</html>
