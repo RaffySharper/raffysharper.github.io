@@ -1,0 +1,36 @@
+{
+  "Cayden": {
+    "appearances": 2,
+    "goals": 3,
+    "assists": 1,
+    "yellowCards": 1,
+    "redCards": 0,
+    "headLoss": 1,
+    "MOTM": 1,
+    "DOTD": 0,
+    "lates": 0
+  },
+  "Danib": {
+    "appearances": 2,
+    "goals": 1,
+    "assists": 3,
+    "yellowCards": 1,
+    "redCards": 0,
+    "headLoss": 0,
+    "MOTM": 1,
+    "DOTD": 0,
+    "lates": 0
+  },
+  "El Gato": {
+    "appearances": 1,
+    "goals": 0,
+    "assists": 1,
+    "yellowCards": 1,
+    "redCards": 0,
+    "headLoss": 0,
+    "MOTM": 0,
+    "DOTD": 1,
+    "lates": 1
+  }
+  // Add more player totals here
+}
