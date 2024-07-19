@@ -9,6 +9,8 @@
     table { width: 80%; margin: 20px auto; border-collapse: collapse; }
     th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
     th { background-color: #f4f4f4; }
+    .separator { height: 2px; background-color: #ccc; margin: 20px 0; }
+    .table-container { margin-bottom: 30px; }
   </style>
 </head>
 <body>
@@ -40,6 +42,17 @@
   <script>
     const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
     const stats = ["rating", "goals", "assists", "yellowCards", "redCards", "headLoss", "MOTM", "DOTD", "lates"];
+    const statNames = {
+      rating: "Ratings",
+      goals: "Goals",
+      assists: "Assists",
+      yellowCards: "Yellow Cards",
+      redCards: "Red Cards",
+      headLoss: "Head Loss",
+      MOTM: "MOTM",
+      DOTD: "DOTD",
+      lates: "Lates"
+    };
 
     function loadStats() {
       const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
@@ -63,41 +76,6 @@
       const tablesContainer = document.getElementById('tables-container');
       tablesContainer.innerHTML = '';
       stats.forEach(stat => {
-        const table = document.createElement('table');
-        table.innerHTML = `
-          <thead>
-            <tr>
-              <th>Player</th>
-              ${[...Array(matchStats.length)].map((_, i) => `<th>Match ${i + 1}</th>`).join('')}
-            </tr>
-          </thead>
-          <tbody>
-            ${players.map(player => `
-              <tr id="${stat}-${player}">
-                <td>${player}</td>
-                ${matchStats.map((match, i) => `
-                  <td>${match[player]?.[stat] || 0}</td>
-                `).join('')}
-              </tr>
-            `).join('')}
-          </tbody>
-        `;
-        tablesContainer.appendChild(table);
-      });
-    }
-
-    function calculateTotals(matchStats) {
-      const totals = {};
-      players.forEach(player => {
-        totals[player] = { appearances: 0, goals: 0, assists: 0 };
-      });
-      matchStats.forEach(match => {
-        players.forEach(player => {
-          if (match[player]) {
-            totals[player].appearances += 1;
-            totals[player].goals += match[player].goals || 0;
-            totals[player].assists += match[player].assists || 0;
-          }
-        });
-      });
-     
+        const tableContainer = document.createElement('div');
+        tableContainer.classList.add('table-container');
+        tableContainer.innerHTML = `<h
