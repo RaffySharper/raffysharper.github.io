@@ -5,50 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Stats</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    button { margin: 5px; padding: 10px 20px; font-size: 16px; }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background-color: #f4f4f4; }
+    input { width: 50px; }
   </style>
 </head>
 <body>
   <h1>Football Stats</h1>
-  <p>Matches Played: <span id="matches_played">0</span></p>
-  <p>Goals Scored: <span id="goals_scored">0</span></p>
-  <p>Goals Conceded: <span id="goals_conceded">0</span></p>
-  <button onclick="increment('matches_played')">+1 Match Played</button>
-  <button onclick="increment('goals_scored')">+1 Goal Scored</button>
-  <button onclick="increment('goals_conceded')">+1 Goal Conceded</button>
-  <button onclick="decrement('matches_played')">-1 Match Played</button>
-  <button onclick="decrement('goals_scored')">-1 Goal Scored</button>
-  <button onclick="decrement('goals_conceded')">-1 Goal Conceded</button>
+
+  <div id="match-stats">
+    <h2>Match Stats</h2>
+    <button onclick="addMatch()">Add New Match</button>
+    <div id="matches">
+      <!-- Match forms will be added here -->
+    </div>
+  </div>
+
+  <div id="total-stats">
+    <h2>Total Stats</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Appearances</th>
+          <th>Total Goals</th>
+          <th>Total Assists</th>
+        </tr>
+      </thead>
+      <tbody id="total-table-body">
+      </tbody>
+    </table>
+  </div>
+
   <a href="index.html">Back to Sign In</a>
 
   <script>
+    const players = ["Cayden", "Danib", "El Gato", "Fulford", "Luke", "Ned", "Raffy", "Restell", "Spooner", "Stan", "Fin"];
+
     function loadStats() {
-      const stats = {
-        matches_played: localStorage.getItem('matches_played') || 0,
-        goals_scored: localStorage.getItem('goals_scored') || 0,
-        goals_conceded: localStorage.getItem('goals_conceded') || 0
-      };
-      document.getElementById('matches_played').textContent = stats.matches_played;
-      document.getElementById('goals_scored').textContent = stats.goals_scored;
-      document.getElementById('goals_conceded').textContent = stats.goals_conceded;
+      const matchStats = JSON.parse(localStorage.getItem('matchStats')) || [];
+      const totalStats = calculateTotals(matchStats);
+
+      // Populate total stats table
+      const totalTableBody = document.getElementById('total-table-body');
+      totalTableBody.innerHTML = '';
+      players.forEach(player => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${player}</td>
+          <td>${totalStats[player]?.appearances || 0}</td>
+          <td>${totalStats[player]?.goals || 0}</td>
+          <td>${totalStats[player]?.assists || 0}</td>
+        `;
+        totalTableBody.appendChild(row);
+      });
+
+      // Populate match forms
+      const matchesDiv = document.getElementById('matches');
+      matchesDiv.innerHTML = '';
+      matchStats.forEach((match, index) => {
+        matchesDiv.appendChild(createMatchForm(match, index));
+      });
     }
 
-    function increment(stat) {
-      let currentValue = parseInt(localStorage.getItem(stat)) || 0;
-      localStorage.setItem(stat, currentValue + 1);
-      loadStats();
-    }
-
-    function decrement(stat) {
-      let currentValue = parseInt(localStorage.getItem(stat)) || 0;
-      if (currentValue > 0) {
-        localStorage.setItem(stat, currentValue - 1);
-      }
-      loadStats();
-    }
-
-    window.onload = loadStats;
-  </script>
-</body>
-</html>
+    function createMatchForm(match, index) {
+      const form = document.createElement('div');
+      form.innerHTML = `
+        <h3>Match ${index + 1}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Rating</th>
+              <th>Goals</th>
+              <th>Assists</th>
+              <th>Yellow Cards</th>
+              <th>Red Cards</th>
+              <th>Head Loss</th>
+              <th>MOTM</th>
+              <th>DOTD</th>
+              <th>Lates</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${players.map(player => `
+              <tr>
+                <td>${player}</td>
+                <td><input type="number" step="0.5" value="${match[player]?.rating || 0}" oninput="updateMatchStat(${index}, '${player}', 'rating', this.value)"></td>
+                <td><input type="number" value="${match[player]?.goals || 0}" oninput="updateMatchStat(${index}, '${player}', 'goals', this.value)"></td>
+                <td><input type="number" value="${match[player]?.assists || 0}" oninput="updateMatchStat(${index}, '${player}', 'assists', this.value)"></td>
+                <td><input type="number" value="${match[player]?.yellowCards || 0}" oninput="updateMatchStat(${index}, '${player}', 'yellowCards', this.value)"></td>
+                <td><input type="number" value="${match[player]?.redCards || 0}" oninput="updateMatchStat(${index}, '${player}', 'redCards', this
