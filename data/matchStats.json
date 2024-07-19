@@ -1,0 +1,70 @@
+[
+  {
+    "matchDate": "2024-07-01",
+    "players": {
+      "Cayden": {
+        "rating": 7.5,
+        "goals": 2,
+        "assists": 1,
+        "yellowCards": 0,
+        "redCards": 0,
+        "headLoss": 1,
+        "MOTM": true,
+        "DOTD": false,
+        "lates": 0
+      },
+      "Danib": {
+        "rating": 6.5,
+        "goals": 1,
+        "assists": 2,
+        "yellowCards": 1,
+        "redCards": 0,
+        "headLoss": 0,
+        "MOTM": false,
+        "DOTD": false,
+        "lates": 0
+      },
+      "El Gato": {
+        "rating": 7.0,
+        "goals": 0,
+        "assists": 1,
+        "yellowCards": 1,
+        "redCards": 0,
+        "headLoss": 0,
+        "MOTM": false,
+        "DOTD": true,
+        "lates": 1
+      }
+      // Add more player stats here
+    }
+  },
+  {
+    "matchDate": "2024-07-08",
+    "players": {
+      "Cayden": {
+        "rating": 6.0,
+        "goals": 1,
+        "assists": 0,
+        "yellowCards": 1,
+        "redCards": 0,
+        "headLoss": 0,
+        "MOTM": false,
+        "DOTD": false,
+        "lates": 0
+      },
+      "Danib": {
+        "rating": 8.0,
+        "goals": 0,
+        "assists": 1,
+        "yellowCards": 0,
+        "redCards": 0,
+        "headLoss": 0,
+        "MOTM": true,
+        "DOTD": false,
+        "lates": 0
+      }
+      // Add more player stats here
+    }
+  }
+  // Add more matches here
+]
